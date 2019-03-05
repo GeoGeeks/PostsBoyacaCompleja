@@ -2,7 +2,8 @@
   <div class="container">
       <div class="row justify-content-center">
           <div class="col-md-8">
-              <form v-on:submit="postear()">
+            <!-- previene que la pagina se refresque -->
+              <form v-on:submit.prevent="">
                   <div class="form-group">
                     <label for="nombre"><h3>Comparte tu Opinión</h3></label>
                     <input type="text" class="form-control" id="nombre" placeholder="Ingresa tu Nombre" title="Nombre" v-model="nombre" required>
@@ -16,7 +17,7 @@
                   <div class="form-group" style= "visibility: hidden; color:red" id="textAdvertencia">
                       <label>Excediste el número de caracteres</label>                      
                   </div>
-                  <button type="submit" v-on:click="" class="btn btn-primary" id="botonSubmit">Comentar</button>
+                  <button type="submit" v-on:click="postear();obtenerPosts()" class="btn btn-primary" id="botonSubmit">Comentar</button>
                 </form>
           </div>
       </div>
@@ -161,7 +162,10 @@ export default {
             console.log(response.status); // ex.: 200
       });
     },
-
+    limpiarCampos: function(){
+      document.getElementById("nombre").value = "";
+      document.getElementById("txtArea").value = "";
+    },
     postear: function(){
         try {
           var inst = this;
@@ -170,8 +174,8 @@ export default {
             "Content-Type": "application/json",
             "Allow": "*",
           };
-          // var usuario = document.getElementById("nombre").value;
-          // var comentario = document.getElementById("txtArea").value;
+          var usuario = document.getElementById("nombre").value;
+          var comentario = document.getElementById("txtArea").value;
           var fecha = new Date();
           var f = fecha.getDate()+"/"+(fecha.getMonth()+1)+"/"+fecha.getFullYear();
           var h = fecha.getHours()+":"+fecha.getMinutes();
@@ -182,8 +186,8 @@ export default {
           // console.log(inst.nombre);
           var data = {
                     // id: idd,
-                    nombre: inst.nombre,
-                    comentario: inst.message,
+                    nombre: usuario,
+                    comentario: comentario,
                     fechaHora: fechaCom
                 };
           var test= JSON.stringify(data);
@@ -191,7 +195,8 @@ export default {
           axios.post('https://cors-anywhere.herokuapp.com/geoapps.esri.co/TheService/api/mongo/',  test, {headers: headers})
                 // axios.post('geoapps.esri.co:81/api/reporte/',  test, {headers: headers})
                 .then(function (response){
-                    console.log("Reporte agregado");
+                  inst.obtenerPosts();
+                  console.log("Reporte agregado");
                     // alert("Reporte agregado");
                 })
                 .catch(function (error){
