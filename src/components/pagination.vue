@@ -28,7 +28,7 @@
                           <time class="comment-date" datetime="16-12-2014 01:05"><i class="fa fa-clock-o"></i>{{post.fechaHora}}</time>
                         </header>
                         <div class="comment-post">
-                          <p>{{post.comentario}}</p>
+                          <p class="overflow">{{post.comentario}}</p>
                         </div>
                       </div>
                     </div>
@@ -219,5 +219,11 @@ button:hover{
 }
 button:hover:disabled{
   cursor:not-allowed;
+}
+
+.overflow{
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

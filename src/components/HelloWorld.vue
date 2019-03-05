@@ -112,7 +112,7 @@ export default {
     },
     //comprobar si los posts tienen una groseria con expresiones regulares
     filtro: function(){
-      var text = this.message;
+      var text = document.getElementById("txtArea");;
       // console.log(text);
       for(var i = 0; i < this.groserias.length;i++){
           var regex = new RegExp("(^|\\s)"+this.groserias[i]+"($|(?=\\s))","gi");
@@ -123,19 +123,6 @@ export default {
             this.groseria = true;
           }          
       }
-    },
-    obtenerPosts: function(){
-      console.log("obtener");
-      var inst = this;
-        // this.arreglo = [];
-        axios.get('https://cors-anywhere.herokuapp.com/geoapps.esri.co/TheService/api/mongo/?format=json')
-        // axios.get('data/prueba.json/') //data de prueba
-        .then(function(response){
-            var arreglo = response.data;
-            inst.arregloPosts = arreglo.reverse(); //para ver los posts mas recientes
-            console.log(inst.arregloPosts); // ex.: { user: 'Your User'}
-            console.log(response.status); // ex.: 200
-      });
     },
     //funcion para calcular cuantos caracteres tiene por escribir la persona
     countdown: function() {
@@ -152,11 +139,15 @@ export default {
     },
     obtenerPosts: function(){
       var inst = this;
+      const mod = "cap1"; //se agrega esta constante por que son los comentarios sobre el capitulo1
+      //para otros comentarios se cambiarará esta constante
+      //obtiene solo los posts del capitulo especificado
         // this.arreglo = [];
-        axios.get('https://cors-anywhere.herokuapp.com/geoapps.esri.co/TheService/api/mongo/?format=json')
+        axios.get('https://cors-anywhere.herokuapp.com/geoapps.esri.co/TheService/api/mod/?'+'modulo='+mod)
         // axios.get('data/prueba.json/') //data de prueba
         .then(function(response){
             var arreglo = response.data;
+            console.log(arreglo);
             inst.arregloPosts = arreglo.reverse(); //para ver los posts mas recientes
             console.log(inst.arregloPosts); // ex.: { user: 'Your User'}
             console.log(response.status); // ex.: 200
@@ -169,7 +160,7 @@ export default {
     postear: function(){
         try {
           var inst = this;
-        if(inst.remainingCount >= 0){ ///comporbar si tiene mas de los 300 carateres escritos
+          if(inst.remainingCount >= 0){ ///comporbar si tiene mas de los 300 carateres escritos
             var headers = {
             "Content-Type": "application/json",
             "Allow": "*",
@@ -188,7 +179,8 @@ export default {
                     // id: idd,
                     nombre: usuario,
                     comentario: comentario,
-                    fechaHora: fechaCom
+                    fechaHora: fechaCom,
+                    modulo: "cap1"
                 };
           var test= JSON.stringify(data);
           // console.log(test);
