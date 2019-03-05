@@ -6,12 +6,12 @@
               <form v-on:submit.prevent="">
                   <div class="form-group">
                     <label for="nombre"><h3>Comparte tu Opinión</h3></label>
-                    <input type="text" class="form-control" id="nombre" placeholder="Ingresa tu Nombre" title="Nombre" v-model="nombre" required>
+                    <input type="text" class="form-control" id="nombre" placeholder="Ingresa tu Nombre" title="Nombre" required>
                     <small id="nombreHelp" class="form-text text-muted">Nombre visible para la comunidad.</small>
                   </div>
                   <div class="form-group">
                       <label for="txtArea"><h4>Ingresa tu Comentario</h4></label>
-                      <textarea class="form-control" id="txtArea" rows="3" title="Comentarios" v-model="message" v-on:keydown="countdown()" required></textarea>
+                      <textarea class="form-control" v-model="message" id="txtArea" rows="3" title="Comentarios" v-on:keydown="countdown()" required></textarea>
                       <small id="comHelp" class="form-text text-muted" v-bind:class="{'text-danger': hasError }">{{remainingCount}} |:V*| Escribe tu opinión en menos de {{maxCount}} carácteres.</small>
                   </div>
                   <div class="form-group" style= "visibility: hidden; color:red" id="textAdvertencia">
@@ -73,8 +73,11 @@ export default {
       message: '',
       hasError: false,
       nombre: '',
-      //expresiones regulares
-      groserias: ["puta", "puto","marica","pirobo","gonorrea","hijo de puta","malparido"],
+      //groserias a ser evaluadas
+      groserias: ["puta","puto","marica","pirobo","gonorrea",
+      "hijo de puta","malparido","gonorreo","hpta","piro","piroo","hp","loca","jijueputa",
+      "piroba","piroa","ñunfla","huevon","guevon","weon","marico","maricon","cabron","chupa","pijas"
+      ,"chupa pijas","sifilis","hijueputa","mierda","caca","excremento"],
       groseria: false
     }
   },
@@ -112,12 +115,12 @@ export default {
     },
     //comprobar si los posts tienen una groseria con expresiones regulares
     filtro: function(){
-      var text = document.getElementById("txtArea");;
+      this.message = document.getElementById("txtArea").value;
       // console.log(text);
       for(var i = 0; i < this.groserias.length;i++){
           var regex = new RegExp("(^|\\s)"+this.groserias[i]+"($|(?=\\s))","gi");
           // console.log(regex)
-          var evaluacion = regex.test(text);
+          var evaluacion = regex.test(this.message);
           if(evaluacion == true){
             console.log("groseria");
             this.groseria = true;
@@ -158,45 +161,49 @@ export default {
       document.getElementById("txtArea").value = "";
     },
     postear: function(){
-        try {
-          var inst = this;
-          if(inst.remainingCount >= 0){ ///comporbar si tiene mas de los 300 carateres escritos
+      try {
+        var inst = this;
+        if(inst.remainingCount >= 0){ ///comporbar si tiene mas de los 300 carateres escritos
+        this.filtro();
+          if(!this.groseria){ ///filtra si tiene groserias
             var headers = {
             "Content-Type": "application/json",
             "Allow": "*",
-          };
-          var usuario = document.getElementById("nombre").value;
-          var comentario = document.getElementById("txtArea").value;
-          var fecha = new Date();
-          var f = fecha.getDate()+"/"+(fecha.getMonth()+1)+"/"+fecha.getFullYear();
-          var h = fecha.getHours()+":"+fecha.getMinutes();
-          var fechaCom = f+" "+h;
-          // var idd = inst.arregloPosts.length+1;
+            };
+            var usuario = document.getElementById("nombre").value;
+            var comentario = document.getElementById("txtArea").value;
+            var fecha = new Date();
+            var f = fecha.getDate()+"/"+(fecha.getMonth()+1)+"/"+fecha.getFullYear();
+            var h = fecha.getHours()+":"+fecha.getMinutes();
+            var fechaCom = f+" "+h;
+            // var idd = inst.arregloPosts.length+1;
 
-          // console.log(inst.message);
-          // console.log(inst.nombre);
-          var data = {
-                    // id: idd,
-                    nombre: usuario,
-                    comentario: comentario,
-                    fechaHora: fechaCom,
-                    modulo: "cap1"
-                };
-          var test= JSON.stringify(data);
-          // console.log(test);
-          axios.post('https://cors-anywhere.herokuapp.com/geoapps.esri.co/TheService/api/mongo/',  test, {headers: headers})
-                // axios.post('geoapps.esri.co:81/api/reporte/',  test, {headers: headers})
-                .then(function (response){
-                  inst.obtenerPosts();
-                  console.log("Reporte agregado");
-                    // alert("Reporte agregado");
-                })
-                .catch(function (error){
-                    console.log(error);
-                    console.log("No se pudo agregar");
-                });
-        }
-        else{
+            // console.log(inst.message);
+            // console.log(inst.nombre);
+            var data = {
+                      // id: idd,
+                      nombre: usuario,
+                      comentario: comentario,
+                      fechaHora: fechaCom,
+                      modulo: "cap1"
+                  };
+            var test= JSON.stringify(data);
+            // console.log(test);
+            axios.post('https://cors-anywhere.herokuapp.com/geoapps.esri.co/TheService/api/mongo/',  test, {headers: headers})
+                  // axios.post('geoapps.esri.co:81/api/reporte/',  test, {headers: headers})
+                  .then(function (response){
+                    inst.obtenerPosts();
+                    console.log("Reporte agregado");
+                      // alert("Reporte agregado");
+                  })
+                  .catch(function (error){
+                      console.log(error);
+                      console.log("No se pudo agregar");
+                  });
+          }else{
+            alert("Apreciamos tu opinión y tiempo para comentar, sin embargo este comentario no esta permitido debído al lenguaje usado en él");
+          }
+        }else{
           alert("Pasó el limite de caracteres permitidos");
         }
       } catch (error) {
