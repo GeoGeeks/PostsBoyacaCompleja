@@ -146,13 +146,14 @@ export default {
       //para otros comentarios se cambiarará esta constante
       //obtiene solo los posts del capitulo especificado
         // this.arreglo = [];
-        axios.get('https://cors-anywhere.herokuapp.com/geoapps.esri.co/TheService/api/mod/?'+'modulo='+mod)
+        // axios.get('https://cors-anywhere.herokuapp.com/geoapps.esri.co/TheService/api/mod/?'+'modulo='+mod)
+        axios.get('http://geoapps.esri.co/TheService/api/mod/?'+'modulo='+mod)
         // axios.get('data/prueba.json/') //data de prueba
         .then(function(response){
             var arreglo = response.data;
-            console.log(arreglo);
+            // console.log(arreglo);
             inst.arregloPosts = arreglo.reverse(); //para ver los posts mas recientes
-            console.log(inst.arregloPosts); // ex.: { user: 'Your User'}
+            // console.log(inst.arregloPosts); // ex.: { user: 'Your User'}
             console.log(response.status); // ex.: 200
       });
     },
@@ -189,7 +190,8 @@ export default {
                   };
             var test= JSON.stringify(data);
             // console.log(test);
-            axios.post('https://cors-anywhere.herokuapp.com/geoapps.esri.co/TheService/api/mongo/',  test, {headers: headers})
+            // axios.post('https://cors-anywhere.herokuapp.com/geoapps.esri.co/TheService/api/mongo/',  test, {headers: headers})
+            axios.post('http://geoapps.esri.co/TheService/api/mongo/',  test, {headers: headers})
                   // axios.post('geoapps.esri.co:81/api/reporte/',  test, {headers: headers})
                   .then(function (response){
                     inst.obtenerPosts();
